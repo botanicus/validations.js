@@ -8,5 +8,5 @@ var minitest = require("minitest");
 minitest.setupListeners();
 
 // additional global objects
-global.assert    = require("assert");
-global.context   = minitest.context;
+global.assert  = require("assert");
+global.context = minitest.context;
