@@ -26,33 +26,58 @@ Generate the actual validation function.
 Validation.prototype.generate = function generate (condition) {
   assert.ok(condition);
 
-  var list = this.property.split(".");
-
-  function getValue (object, list) {
-    if (list.length !== 0) {
-      var property = list.shift();
-      // don't fail if object is null and return another null,
-      // so if we have validations for "client.name", but the object
-      // doesn't provide nor even client, it won't fail
-      var object = object ? object[property] : null;
-      var result = getValue(object, list);
-      return result;
-    } else {
-      return object;
-    };
-  };
-
-  var validation = this;
+  var self = this
 
   return function (object) {
-    var value = getValue(object, list); // TODO: refactor using reduce
-    if (!condition.call(validation, object, value)) {
-      var errors  = new Object();
-      var message = validation.property + " " + validation.message;
-      errors[validation.property] || (errors[validation.property] = []);
-      errors[validation.property].push(message);
-      return errors;
+    var list = self.property.split(".");
+    if (!self._validate(object, object, list, condition)) {
+      var list = self.property.split(".");
+      return self._buildErrors(object, {}, list);
+    } else {
+      return {};
     };
+  };
+};
+
+// {client: {name: "101Tasks.app"}}, ["client", "name"]
+// {name: "101Tasks.app"},           ["name"]
+Validation.prototype._validate = function _validate (object, value, list, condition) {
+  var self = this;
+
+  if (list.length > 0) {
+    // do recursion
+    var property = list.shift();
+    // don't fail if object is null and return another null,
+    // so if we have validations for "client.name", but the object
+    // doesn't provide nor even client, it won't fail
+    var value = value ? value[property] : null
+    return this._validate(object, value, list, condition);
+  } else {
+    // final processing
+    return condition.call(self, object, value);
+  };
+};
+
+// {client: {name: "101Tasks.app"}}, {}, ["client", "name"]
+// {name: "101Tasks.app"},           {}, ["name"]
+Validation.prototype._buildErrors = function _buildErrors (object, errors, list) {
+  var self = this;
+  var property = list.shift();
+
+  if (list.length > 1) {
+    // do recursion
+    // don't fail if object is null and return another null,
+    // so if we have validations for "client.name", but the object
+    // doesn't provide nor even client, it won't fail
+    var object = object ? object[property] : null
+    errors[property] = {};
+
+    return this._buildErrors(object, errors[property], list);
+  } else {
+    // final processing
+    errors[property] || (errors[property] = []);
+    errors[property].push(self.message);
+    return errors;
   };
 };
 

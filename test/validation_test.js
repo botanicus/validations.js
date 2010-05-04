@@ -11,7 +11,7 @@ context("Validation.prototype.constructor()", function () {
     });
   });
 
-  this.assertion("it should throw an error if the first argument isn't provided", function (test) {
+  this.assertion("it should throw an error if the second argument isn't provided", function (test) {
     assert.throws(function () {
       test.finished();
       new Validation("email");
@@ -47,7 +47,7 @@ context("Validation.prototype.generate()", function () {
 
   this.assertion("it should pass object and value into the validation function", function (test) {
     var lambda = this.validation.generate(function (object, value) {
-      assert.equal(object.name, "Jakub");
+      assert.deepEqual(object, test.validObject);
       assert.equal(value, "jakub@example.com");
       test.finished();
     });
@@ -91,8 +91,8 @@ context("validate()", function () {
   });
 
   this.assertion("it should return error object {property: [errors]} if given object isn't valid", function (test) {
-    var result = validate(this.invalidObject, [validations.presence("email")]); //
-    assert.deepEqual(result, {email: ["email has to be present"]});
+    var result = validate(this.invalidObject, [validations.presence("email")]);
+    assert.deepEqual(result, {email: ["has to be present"]});
     test.finished();
   });
 });
