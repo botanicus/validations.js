@@ -54,3 +54,34 @@ Validation.prototype.generate = function generate (condition) {
 };
 
 exports.Validation = Validation;
+
+/*
+Validate given object with given validations.
+
+@example
+	validate({email: null}, [validations.presence("email"), validations.email("email")]);
+*/
+exports.validate = function validate (object, validations) {
+  assert.ok(object);
+  assert.ok(validations);
+
+  return validations.reduce(function (errors, validation) {
+    var errorsForStep = validation(object);
+    if (errorsForStep) {
+      var properties = Object.keys(errorsForStep);
+      for (index in properties) {
+        var property = properties[index];
+        var errorsForProperty = errorsForStep[property];
+        if (errors[property]) {
+          errorsForProperty.forEach(function (error) {
+            errors[property].push(error)
+          });
+        } else {
+          errors[property] = errorsForProperty;
+        };
+      };
+    };
+
+    return errors;
+  }, {});
+};
