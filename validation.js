@@ -31,7 +31,10 @@ Validation.prototype.generate = function generate (condition) {
   function getValue (object, list) {
     if (list.length !== 0) {
       var property = list.shift();
-      var object = object[property];
+      // don't fail if object is null and return another null,
+      // so if we have validations for "client.name", but the object
+      // doesn't provide nor even client, it won't fail
+      var object = object ? object[property] : null;
       var result = getValue(object, list);
       return result;
     } else {
