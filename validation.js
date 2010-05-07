@@ -39,6 +39,8 @@ Validation.prototype.generate = function generate (condition) {
   };
 };
 
+// TODO: rewrite this thing using list.reduce as I'm using in the matchers in the fn function
+
 // {client: {name: "101Tasks.app"}}, ["client", "name"]
 // {name: "101Tasks.app"},           ["name"]
 Validation.prototype._validate = function _validate (object, value, list, condition) {
@@ -57,6 +59,8 @@ Validation.prototype._validate = function _validate (object, value, list, condit
     return condition.call(self, object, value);
   };
 };
+
+// TODO: rewrite this thing using list.reduce as I'm using in the matchers in the fn function
 
 // {client: {name: "101Tasks.app"}}, {}, ["client", "name"]
 // {name: "101Tasks.app"},           {}, ["name"]
