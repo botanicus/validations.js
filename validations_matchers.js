@@ -66,7 +66,7 @@ exports.errorsInclude = function errorsInclude (errors, property, message) {
   assert.ok(errors);
   assert.ok(property);
 
-  if (message && errors.indexOf(message) === -1) {
+  if (message && ! errors[message]) {
     var error = "errors " + sys.inspect(errors) + " for property " + property + " don't include message '" + message + "'";
     assert.fail(errors, message, error, exports.hasErrorOn);
   } else if (!message && errors.length === 0) {
@@ -78,7 +78,7 @@ exports.errorsDoNotInclude = function errorsDoNotInclude (errors, property, mess
   assert.ok(errors);
   assert.ok(property);
 
-  if (message && errors.indexOf(message) !== -1) {
+  if (message && errors[message]) {
     var error = "errors " + sys.inspect(errors) + " for property " + property + " include message '" + message + "', but it shouldn't";
     assert.fail(errors, message, error, exports.exports.hasNotErrorOn);
   } else if (!message && errors.length !== 0) {
