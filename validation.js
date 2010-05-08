@@ -126,7 +126,7 @@ function deepMerge (object1, object2) {
             });
           };
         } else if (typeof value == "object") {
-          result[property] = deepMerge(value, another[property]);
+          result[property] = deepMerge(value, another[property] || {});
         } else {
           result[property] = value;
         };
