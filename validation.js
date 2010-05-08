@@ -103,21 +103,39 @@ exports.validate = function validate (object, validations) {
 
   return validations.reduce(function (errors, validation) {
     var errorsForStep = validation(object);
-    if (errorsForStep) {
-      var properties = Object.keys(errorsForStep);
-      for (index in properties) {
-        var property = properties[index];
-        var errorsForProperty = errorsForStep[property];
-        if (errors[property]) {
-          errorsForProperty.forEach(function (error) {
-            errors[property].push(error)
-          });
+    return deepMerge(errors, errorsForStep);
+  }, {});
+};
+
+// merging of nested arrays doesn't work, but we don't need it here
+function deepMerge (object1, object2) {
+  var result = new Object();
+
+  function _merge (object, another) {
+    for (property in object) {
+      var value = object[property];
+      if (value !== null && value !== undefined) {
+        if (value.__proto__.constructor == Array) {
+          // copy the first array
+          result[property] = value.slice(0);
+
+          // copy the second object if it exists and if it's an array
+          if (another[property] && another[property].__proto__.constructor == Array) {
+            another[property].forEach(function (item) {
+              result[property].push(item);
+            });
+          };
+        } else if (typeof value == "object") {
+          result[property] = deepMerge(value, another[property]);
         } else {
-          errors[property] = errorsForProperty;
+          result[property] = value;
         };
       };
-    };
+    }
+  };
 
-    return errors;
-  }, {});
+  _merge(object1, object2);
+  _merge(object2, object1);
+
+  return result;
 };
