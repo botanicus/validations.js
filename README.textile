@@ -15,6 +15,19 @@ validator({email: "joe@doe.com"});
 validator({});
 </pre>
 
+Nice, but obviously we want to run more validations against an object:
+
+<pre>
+var validations = require("validations");
+validate = require("validation").validate;
+
+validationFunctions = [validations.presence("metadata.version"), validations.email("email")];
+validate({}, validationFunctions)
+// => {email: ["has to be an email"], metadata: {version: ["has to be present"]}};
+</pre>
+
+Oh yes, validations works recursively! We use @object.subobject.property@ syntax for this kind of stuff, so the syntax is reasonably readable & comprehensive.
+
 h1. Testing
 
 h2. Matchers
