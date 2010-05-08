@@ -1,0 +1,68 @@
+h1. About
+
+JavaScript validations framework.
+
+h1. Example
+
+<pre>
+var validations = require("validations");
+var validator   = validations.presence("email");
+
+// this is valid
+validator({email: "joe@doe.com"});
+
+// this isn't valid
+validator({});
+</pre>
+
+h1. Testing
+
+h2. Matchers
+
+* @isValid(object, validations)@ raise an assertion error if object isn't valid.
+* @isNotValid(object, validations)@ raise an assertion error if object is valid.
+* @hasErrorOn(object, validations, property)@ raise an assertion error if object doesn't have an error on given property.
+* @hasNotErrorOn(object, validations, property)@ raise an assertion error if object has an error on given property.
+* @hasErrorOn(object, validations, property, message)@ raise an assertion error if object doesn't have an error with given message on given property.
+* @hasNotErrorOn(object, validations, property, message)@  raise an assertion error if object has an error with given message on given property.
+* @errorsInclude(errors, property)@ raise an assertion error if the errors object doesn't include given property. This is similar to @hasErrorOn@, but it takes errors as an argument instead of object and validations.
+* @errorsDoNotInclude(errors, property)@  raise an assertion error if if the errors object includes given property. This is similar to @hasNotErrorOn@, but it takes errors as an argument instead of object and validations.
+* @errorsInclude(errors, property, message)@ raise an assertion error if the errors object doesn't include given message on the given property. This is similar to @hasErrorOn@, but it takes errors as an argument instead of object and validations.
+* @errorsDoNotInclude(errors, property, message)@ raise an assertion error if the errors object includes given message on the given property. This is similar to @hasNotErrorOn@, but it takes errors as an argument instead of object and validations.
+
+h2. Example
+
+<pre>
+assert = require("assert");
+
+// extend assert
+for (matcher in matchers) {
+  assert[matcher] = matchers[matcher];
+};
+
+assert.isValid({metadata: {version: "0.1"}}, [validations.presence("metadata.version")]);
+// ok
+
+assert.isValid({}, [validations.presence("email")]);
+// AssertionError
+</pre>
+
+h1. Custom Validations
+
+Validation function generator should take a property as an argument and returns a validation function itself which takes object and property of given property as an argument. The validation function should return a true/false or true-like resp. false-like value. True means that validation passed, false means that validation failed.
+
+Validation class is used for generating validation functions and help with error messages:
+
+<pre>
+var Validation = require("validation").Validation;
+
+exports.presence = function presence (property) {
+  var validation = new Validation(property, "has to be present");
+
+  return validation.generate(function (object, value) {
+    return value === null || value === undefined;
+  });
+};
+</pre>
+
+Take a look at the @validations.js@ file for more examples.
