@@ -194,7 +194,7 @@ context("assert.hasNotErrorOn(object, validations, property)", function () {
   });
 
   this.assertion("it should work recursively", function (test) {
-    assert.throws(function () {
+    assert.doesNotThrow(function () {
       test.finished();
       var object = {metadata: {version: "0.0.1"}}
       var functions = [validations.presence("metadata.version")];
@@ -203,9 +203,9 @@ context("assert.hasNotErrorOn(object, validations, property)", function () {
   });
 
   this.assertion("it should work recursively even if the nested properties don't exist", function (test) {
-    assert.doesNotThrow(function () {
+    assert.throws(function () {
       test.finished();
-      assert.hasNotErrorOn({}, [validations.presence("metadata.version")]);
+      assert.hasNotErrorOn({}, [validations.presence("metadata.version")], "metadata.version");
     });
   });
 });
@@ -215,7 +215,7 @@ context("assert.hasNotErrorOn(object, validations, property, message)", function
   this.assertion("it should not throw any assertion error if errors for given property include given message", function (test) {
     assert.doesNotThrow(function () {
       test.finished();
-      var object = {metadata: {version: "0.0.1"}}
+      var object = {metadata: {version: null}}
       var functions = [validations.presence("metadata.version")];
       assert.hasNotErrorOn(object, functions, "metadata.version", "a bad message");
     });
@@ -224,7 +224,7 @@ context("assert.hasNotErrorOn(object, validations, property, message)", function
   this.assertion("it should throw an assertion error if errors for given property don't include given message", function (test) {
     assert.throws(function () {
       test.finished();
-      var object = {metadata: {version: "0.0.1"}}
+      var object = {metadata: {version: null}}
       var functions = [validations.presence("metadata.version")];
       assert.hasNotErrorOn(object, functions, "metadata.version", "has to be present");
     });
@@ -258,8 +258,7 @@ context("assert.errorsInclude(errors, property)", function () {
   this.assertion("it should not throw any assertion error if given error exists", function (test) {
     assert.doesNotThrow(function () {
       test.finished();
-      var functions = [validations.presence("email")];
-      assert.errorsInclude({email: "joe@doe.com"}, functions, "email");
+      assert.errorsInclude({email: "joe@doe.com"}, "email");
     });
   });
 });
@@ -276,21 +275,20 @@ context("assert.errorsInclude(errors, property, message)", function () {
   this.assertion("it should not throw any error if errors include given message", function (test) {
     assert.doesNotThrow(function () {
       test.finished();
-      assert.errorsInclude({}, "email", "has to be present");
+      assert.errorsInclude({email: "has to be present"}, "email", "has to be present");
     });
   });
 
   this.assertion("it should work recursively", function (test) {
-    assert.throws(function () {
+    assert.doesNotThrow(function () {
       test.finished();
-      var object = {metadata: {version: "0.0.1"}}
-      var functions = [validations.presence("metadata.version")];
-      assert.errorsInclude(object, "metadata.version", "has to be present");
+      var errors = {metadata: {version: "has to be present"}};
+      assert.errorsInclude(errors, "metadata.version", "has to be present");
     });
   });
 
   this.assertion("it should work recursively even if the nested properties don't exist", function (test) {
-    assert.doesNotThrow(function () {
+    assert.throws(function () {
       test.finished();
       assert.errorsInclude({}, "metadata.version", "has to be present");
     });
@@ -316,16 +314,14 @@ context("assert.errorsDoNotInclude(errors, property)", function () {
   this.assertion("it should not throw any assertion error if given error exists", function (test) {
     assert.doesNotThrow(function () {
       test.finished();
-      var functions = [validations.presence("email")];
-      assert.errorsDoNotInclude({}, functions, "email");
+      assert.errorsDoNotInclude({}, "email");
     });
   });
 
   this.assertion("it should throw an assertion error if given error doesn't exist", function (test) {
     assert.throws(function () {
       test.finished();
-      var functions = [validations.presence("email")];
-      assert.errorsDoNotInclude({email: "joe@doe.com"}, functions, "email");
+      assert.errorsDoNotInclude({email: "joe@doe.com"}, "email");
     });
   });
 });
@@ -339,24 +335,23 @@ context("assert.errorsDoNotInclude(errors, property, message)", function () {
     });
   });
 
-  this.assertion("it should throw an error if errors don't include given message", function (test) {
-    assert.throws(function () {
+  this.assertion("it should not throw an error if errors don't include given message", function (test) {
+    assert.doesNotThrow(function () {
       test.finished();
       assert.errorsDoNotInclude({}, "email", "has to be present");
     });
   });
 
   this.assertion("it should work recursively", function (test) {
-    assert.doesNotThrow(function () {
+    assert.throws(function () {
       test.finished();
-      var object = {metadata: {version: "0.0.1"}}
-      var functions = [validations.presence("metadata.version")];
-      assert.errorsDoNotInclude(object, "metadata.version", "has to be present");
+      var errors = {metadata: {version: "has to be present"}}
+      assert.errorsDoNotInclude(errors, "metadata.version", "has to be present");
     });
   });
 
   this.assertion("it should work recursively even if the nested properties don't exist", function (test) {
-    assert.throws(function () {
+    assert.doesNotThrow(function () {
       test.finished();
       assert.errorsDoNotInclude({}, "metadata.version", "has to be present");
     });

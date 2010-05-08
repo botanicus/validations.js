@@ -32,7 +32,8 @@ Validation.prototype.generate = function generate (condition) {
     var list = self.property.split(".");
     if (!self._validate(object, object, list, condition)) {
       var list = self.property.split(".");
-      return self._buildErrors(object, {}, list);
+      var errors = {};
+      return self._buildErrors(errors, list, object, errors);
     } else {
       return {};
     };
@@ -60,27 +61,30 @@ Validation.prototype._validate = function _validate (object, value, list, condit
   };
 };
 
-// TODO: rewrite this thing using list.reduce as I'm using in the matchers in the fn function
+// NOTE: list.reduce won't simplify this code since we need to return both object and errors from each iteraction.
 
 // {client: {name: "101Tasks.app"}}, {}, ["client", "name"]
 // {name: "101Tasks.app"},           {}, ["name"]
-Validation.prototype._buildErrors = function _buildErrors (object, errors, list) {
+Validation.prototype._buildErrors = function _buildErrors (errors, list, objectForStep, errorsForStep) {
   var self = this;
   var property = list.shift();
 
-  if (list.length > 1) {
+  if (list.length > 0) {
     // do recursion
     // don't fail if object is null and return another null,
     // so if we have validations for "client.name", but the object
     // doesn't provide nor even client, it won't fail
-    var object = object ? object[property] : null
-    errors[property] = {};
+    var objectForStep = objectForStep ? objectForStep[property] : null
+    errorsForStep[property] = {};
 
-    return this._buildErrors(object, errors[property], list);
+    // In each iteration errorsForStep is a different object (unlike
+    // the errors object), so we can build the required structure:
+    // begin: {}, then: {metadata: {}}, recursion: errorsForStep[metadata] which is {}
+    return this._buildErrors(errors, list, objectForStep, errorsForStep[property]);
   } else {
     // final processing
-    errors[property] || (errors[property] = []);
-    errors[property].push(self.message);
+    errorsForStep[property] || (errorsForStep[property] = []);
+    errorsForStep[property].push(self.message);
     return errors;
   };
 };

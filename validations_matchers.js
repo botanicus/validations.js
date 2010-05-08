@@ -37,13 +37,11 @@ exports.hasErrorOn = function hasErrorOn (object, validations, property, message
   assert.ok(validations);
   assert.ok(property);
 
-  sys.p([object, validations]) ////
   var errors = validate(object, validations);
-  sys.p(errors) ////
-  sys.puts("")
-  errors = fn(errors, property.split("."));
 
   exports.errorsInclude(errors, property, message);
+
+  return errors;
 };
 
 exports.hasNotErrorOn = function hasNotErrorOn (object, validations, property, message) {
@@ -52,9 +50,10 @@ exports.hasNotErrorOn = function hasNotErrorOn (object, validations, property, m
   assert.ok(property);
 
   var errors = validate(object, validations);
-  errors = fn(errors, property.split("."));
 
   exports.errorsDoNotInclude(errors, property, message);
+
+  return errors;
 };
 
 /*
@@ -65,12 +64,13 @@ This is a low-level API. It can be handy if you have a model and you are testing
 exports.errorsInclude = function errorsInclude (errors, property, message) {
   assert.ok(errors);
   assert.ok(property);
+  var messages = fn(errors, property.split("."));
 
-  if (message && ! errors[message]) {
-    var error = "errors " + sys.inspect(errors) + " for property " + property + " don't include message '" + message + "'";
-    assert.fail(errors, message, error, exports.hasErrorOn);
-  } else if (!message && errors.length === 0) {
-    assert.deepEqual(errors, []);
+  if (message && messages.indexOf(message) === -1) {
+    var error = "errors " + sys.inspect(messages) + " for property " + property + " don't include message '" + message + "'.\nThe errors object: " + sys.inspect(errors);
+    assert.fail(messages, message, error, exports.hasErrorOn);
+  } else if (!message && messages.length === 0) {
+    assert.deepEqual(messages, []);
   };
 };
 
@@ -78,10 +78,12 @@ exports.errorsDoNotInclude = function errorsDoNotInclude (errors, property, mess
   assert.ok(errors);
   assert.ok(property);
 
-  if (message && errors[message]) {
-    var error = "errors " + sys.inspect(errors) + " for property " + property + " include message '" + message + "', but it shouldn't";
-    assert.fail(errors, message, error, exports.exports.hasNotErrorOn);
-  } else if (!message && errors.length !== 0) {
-    assert.deepEqual(errors, []);
+  var messages = fn(errors, property.split("."));
+
+  if (message && messages.indexOf(message) !== -1) {
+    var error = "errors " + sys.inspect(messages) + " for property " + property + " include message '" + message + "', but it shouldn't";
+    assert.fail(messages, message, error, exports.hasNotErrorOn);
+  } else if (!message && messages.length !== 0) {
+    assert.deepEqual(messages, []);
   };
 };
