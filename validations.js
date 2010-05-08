@@ -11,7 +11,7 @@ exports.presence = function presence (property) {
   var validation = new Validation(property, "has to be present");
 
   return validation.generate(function (object, value) {
-    return value;
+    return value === null || value === undefined;
   });
 };
 
