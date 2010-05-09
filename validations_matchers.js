@@ -3,19 +3,23 @@ var sys = require("sys")
 var assert = require("assert");
 var validate = require("./validation").validate;
 
-exports.isValid = function isValid (object, validations) {
+exports.isValid = function isValid (object, validations, validationFunction) {
   assert.ok(object);
   assert.ok(validations);
 
-  var errors = validate(object, validations);
+  var validationFunction = validationFunction || validate;
+
+  var errors = validationFunction(object, validations);
   assert.deepEqual(errors, {});
 };
 
-exports.isNotValid = function isNotValid (object, validations) {
+exports.isNotValid = function isNotValid (object, validations, validationFunction) {
   assert.ok(object);
   assert.ok(validations);
 
-  var errors = validate(object, validations);
+  var validationFunction = validationFunction || validate;
+
+  var errors = validationFunction(object, validations);
   assert.notDeepEqual(errors, {});
 };
 
@@ -32,24 +36,26 @@ function getPropertyRecursively (errors, list) {
 // assert.hasErrorOn(post, [], "title");
 // assert.hasErrorOn(post, [], "title", "has to be present");
 // assert.hasErrorOn(post, [], "metadata.version");
-exports.hasErrorOn = function hasErrorOn (object, validations, property, message) {
+exports.hasErrorOn = function hasErrorOn (object, validations, property, message, validationFunction) {
   assert.ok(object);
   assert.ok(validations);
   assert.ok(property);
 
-  var errors = validate(object, validations);
+  var validationFunction = validationFunction || validate;
+  var errors = validationFunction(object, validations);
 
   exports.errorsInclude(errors, property, message);
 
   return errors;
 };
 
-exports.hasNotErrorOn = function hasNotErrorOn (object, validations, property, message) {
+exports.hasNotErrorOn = function hasNotErrorOn (object, validations, property, message, validationFunction) {
   assert.ok(object);
   assert.ok(validations);
   assert.ok(property);
 
-  var errors = validate(object, validations);
+  var validationFunction = validationFunction || validate;
+  var errors = validationFunction(object, validations);
 
   exports.errorsDoNotInclude(errors, property, message);
 
@@ -59,6 +65,8 @@ exports.hasNotErrorOn = function hasNotErrorOn (object, validations, property, m
 /*
 This is a low-level API. It can be handy if you have a model and you are testing if the validate method works.
 */
+
+// Deprecated: this will be private soon since we can specify the validation function
 
 // assert.errorsInclude(errors, "metadata.version", message);
 exports.errorsInclude = function errorsInclude (errors, property, message) {
