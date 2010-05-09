@@ -22,7 +22,7 @@ exports.isNotValid = function isNotValid (object, validations) {
 // {metadata: {version: ["has to be present"]}} // metadata, version
 // {version: ["has to be present"]} // version
 // ["has to be present"]
-function fn (errors, list) {
+function getPropertyRecursively (errors, list) {
   var messages = list.reduce(function (errors, property) {
     return errors ? errors[property] : null;
   }, errors);
@@ -64,7 +64,7 @@ This is a low-level API. It can be handy if you have a model and you are testing
 exports.errorsInclude = function errorsInclude (errors, property, message) {
   assert.ok(errors);
   assert.ok(property);
-  var messages = fn(errors, property.split("."));
+  var messages = getPropertyRecursively(errors, property.split("."));
 
   if (message && messages.indexOf(message) === -1) {
     var error = "errors " + sys.inspect(messages) + " for property " + property + " don't include message '" + message + "'.\nThe errors object: " + sys.inspect(errors);
@@ -78,7 +78,7 @@ exports.errorsDoNotInclude = function errorsDoNotInclude (errors, property, mess
   assert.ok(errors);
   assert.ok(property);
 
-  var messages = fn(errors, property.split("."));
+  var messages = getPropertyRecursively(errors, property.split("."));
 
   if (message && messages.indexOf(message) !== -1) {
     var error = "errors " + sys.inspect(messages) + " for property " + property + " include message '" + message + "', but it shouldn't";
