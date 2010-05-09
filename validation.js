@@ -26,18 +26,21 @@ Generate the actual validation function.
 Validation.prototype.generate = function generate (condition) {
   assert.ok(condition);
 
-  var self = this
-
-  return function (object) {
-    var list = self.property.split(".");
-    if (!self._validate(object, object, list, condition)) {
-      var list = self.property.split(".");
+  function validationFunction (object) {
+    var validation = validationFunction.validation;
+    var list = validation.property.split(".");
+    if (!validation._validate(object, object, list, condition)) {
+      var list = validation.property.split(".");
       var errors = {};
-      return self._buildErrors(errors, list, object, errors);
+      return validation._buildErrors(errors, list, object, errors);
     } else {
       return {};
     };
   };
+
+  // let's make the instance accessible from the outside code
+  validationFunction.validation = this;
+  return validationFunction;
 };
 
 // TODO: rewrite this thing using list.reduce as I'm using in the matchers in the fn function
@@ -109,6 +112,9 @@ exports.validate = function validate (object, validations) {
 
 // merging of nested arrays doesn't work, but we don't need it here
 function deepMerge (object1, object2) {
+  assert.ok(object1);
+  assert.ok(object2);
+
   var result = new Object();
 
   function _merge (object, another) {
