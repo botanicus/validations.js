@@ -128,7 +128,11 @@ function deepMerge (object1, object2) {
           // copy the second object if it exists and if it's an array
           if (another[property] && another[property].__proto__.constructor == Array) {
             another[property].forEach(function (item) {
-              result[property].push(item);
+              // don't push the item into array if the array already
+              // includes this item. E.g.: ["wtf"].push("wtf") => ["wtf"]
+              if (result[property].indexOf(item) === -1) {
+                result[property].push(item);
+              };
             });
           };
         } else if (typeof value == "object") {
