@@ -22,7 +22,7 @@ var validations = require("validations");
 validate = require("validation").validate;
 
 validationFunctions = [validations.presence("metadata.version"), validations.email("email")];
-validate({}, validationFunctions)
+validate(validationFunctions, {});
 // => {email: ["has to be an email"], metadata: {version: ["has to be present"]}};
 </pre>
 

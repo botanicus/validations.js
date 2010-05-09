@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var helper      = require("./test_helper"),
     Validation  = require("validation").Validation,
     validate    = require("validation").validate,
@@ -73,25 +75,25 @@ context("validate()", function () {
   this.assertion("it should throw an error if the first argument isn't provided", function (test) {
     assert.throws(function () {
       test.finished();
-      validate({});
+      validate([]);
     });
   });
 
   this.assertion("it should not throw any error if it gets two not-null arguments", function (test) {
     assert.doesNotThrow(function () {
       test.finished();
-      validate({}, []);
+      validate([], {});
     });
   });
 
   this.assertion("it should return an empty object if given object is valid", function (test) {
-    var result = validate(this.validObject, [validations.presence("email")]);
+    var result = validate([validations.presence("email")], this.validObject);
     assert.deepEqual(result, {});
     test.finished();
   });
 
   this.assertion("it should return error object {property: [errors]} if given object isn't valid", function (test) {
-    var result = validate(this.invalidObject, [validations.presence("email")]);
+    var result = validate([validations.presence("email")], this.invalidObject);
     assert.deepEqual(result, {email: ["has to be present"]});
     test.finished();
   });

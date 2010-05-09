@@ -98,9 +98,9 @@ exports.Validation = Validation;
 Validate given object with given validations.
 
 @example
-	validate({email: null}, [validations.presence("email"), validations.email("email")]);
+	validate([validations.presence("email"), validations.email("email")], {email: null});
 */
-exports.validate = function validate (object, validations) {
+exports.validate = function validate (validations, object) {
   assert.ok(object);
   assert.ok(validations);
 

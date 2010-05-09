@@ -3,23 +3,23 @@ var sys = require("sys")
 var assert = require("assert");
 var validate = require("./validation").validate;
 
-exports.isValid = function isValid (object, validations, validationFunction) {
+exports.isValid = function isValid (validations, object, validationFunction) {
   assert.ok(object);
   assert.ok(validations);
 
   var validationFunction = validationFunction || validate;
 
-  var errors = validationFunction(object, validations);
+  var errors = validationFunction(validations, object);
   assert.deepEqual(errors, {});
 };
 
-exports.isNotValid = function isNotValid (object, validations, validationFunction) {
+exports.isNotValid = function isNotValid (validations, object, validationFunction) {
   assert.ok(object);
   assert.ok(validations);
 
   var validationFunction = validationFunction || validate;
 
-  var errors = validationFunction(object, validations);
+  var errors = validationFunction(validations, object);
   assert.notDeepEqual(errors, {});
 };
 
@@ -36,26 +36,26 @@ function getPropertyRecursively (errors, list) {
 // assert.hasErrorOn(post, [], "title");
 // assert.hasErrorOn(post, [], "title", "has to be present");
 // assert.hasErrorOn(post, [], "metadata.version");
-exports.hasErrorOn = function hasErrorOn (object, validations, property, message, validationFunction) {
+exports.hasErrorOn = function hasErrorOn (validations, object, property, message, validationFunction) {
   assert.ok(object);
   assert.ok(validations);
   assert.ok(property);
 
   var validationFunction = validationFunction || validate;
-  var errors = validationFunction(object, validations);
+  var errors = validationFunction(validations, object);
 
   exports.errorsInclude(errors, property, message);
 
   return errors;
 };
 
-exports.hasNotErrorOn = function hasNotErrorOn (object, validations, property, message, validationFunction) {
+exports.hasNotErrorOn = function hasNotErrorOn (validations, object, property, message, validationFunction) {
   assert.ok(object);
   assert.ok(validations);
   assert.ok(property);
 
   var validationFunction = validationFunction || validate;
-  var errors = validationFunction(object, validations);
+  var errors = validationFunction(validations, object);
 
   exports.errorsDoNotInclude(errors, property, message);
 
