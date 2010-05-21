@@ -16,7 +16,8 @@ exports.presence = function presence (property) {
 };
 
 /*
-Check if object has given property match given format.
+Check if object has given property match given format, but don't
+fail if the value isn't presented, it's what presence is good for.
 
 @example
   validations.match("client.version", /^\d+(\.\d+)+$/);
@@ -25,12 +26,17 @@ exports.match = function match (property, regexp) {
   var validation = new Validation(property, "has to match " + regexp);
 
   return validation.generate(function (object, value) {
-    return value.match(regexp);
+    if (!value) {
+      return true;
+    } else {
+      return value.match(regexp);
+    };
   });
 };
 
 /*
-Check if value is a date in proper format.
+Check if value is a date in proper format, but don't fail
+if the value isn't presented, it's what presence is good for.
 
 @example
   validations.date("titleUpdatedAt");
@@ -39,12 +45,17 @@ exports.date = function date (property) {
   var validation = new Validation(property, "has to be a date");
 
   return validation.generate(function (object, value) {
-    return null; // TODO
+    if (!value) {
+      return true;
+    } else {
+      return null; // TODO
+    };
   });
 };
 
 /*
-Check if value is an email.
+Check if value is an email, if the value is presented. Do not
+fail if the value isn't presented, it's what presence is good for.
 
 E-mail validation is really hard thing to do right
 (if you don't believe me, read RFC 822) and a very
@@ -59,6 +70,10 @@ exports.email = function email (property) {
   var validation = new Validation(property, "has to be a valid email");
 
   return validation.generate(function (object, value) {
-    return value && value.match(/.+@.+/);
+    if (!value) {
+      return true;
+    } else {
+      return value.match(/.+@.+/);
+    };
   });
 };
