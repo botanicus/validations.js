@@ -26,7 +26,7 @@ exports.match = function match (property, regexp) {
   var validation = new Validation(property, "has to match " + regexp);
 
   return validation.generate(function (object, value) {
-    if (!value) {
+    if (value === null || value === undefined) {
       return true;
     } else {
       return value.match(regexp);
@@ -45,7 +45,7 @@ exports.date = function date (property) {
   var validation = new Validation(property, "has to be a date");
 
   return validation.generate(function (object, value) {
-    if (!value) {
+    if (value === null || value === undefined) {
       return true;
     } else {
       return null; // TODO
@@ -70,7 +70,7 @@ exports.email = function email (property) {
   var validation = new Validation(property, "has to be a valid email");
 
   return validation.generate(function (object, value) {
-    if (!value) {
+    if (value === null || value === undefined) {
       return true;
     } else {
       return value.match(/.+@.+/);
